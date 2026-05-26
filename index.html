@@ -485,9 +485,16 @@ function handleUpload(ev){
 
 // ── DOWNLOAD ──
 function downloadDash(){
-  const blob=new Blob([document.documentElement.outerHTML],{type:'text/html'});
-  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
-  a.download='dashboard_reputacao_canais.html'; a.click();
+  // Rebuild HTML with current ALL_DATA and lastUpdateStr injected
+  let html = document.documentElement.outerHTML;
+  // Replace the data lines with current in-memory values
+  html = html.replace(/let ALL_DATA\s*=\s*\[[\s\S]*?\];/, 'let ALL_DATA = ' + JSON.stringify(ALL_DATA) + ';');
+  html = html.replace(/let lastUpdateStr\s*=\s*'[^']*';/, "let lastUpdateStr = '" + lastUpdateStr + "';");
+  const blob = new Blob([html], {type:'text/html'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'dashboard_reputacao_canais.html';
+  a.click();
 }
 
 // ── INIT ──
