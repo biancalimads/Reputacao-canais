@@ -100,10 +100,16 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f4f9;color:#1a2744;}
   </div>
   <div class="hr">
     <div class="lupd" id="lupd"><strong>Última atualização:</strong><br>—</div>
-    <label class="ubtn" for="fileInput">
-      <svg viewBox="0 0 24 24"><path d="M9 16h6v-6h4l-7-7-7 7h4v6zm-4 2h14v2H5v-2z"/></svg>
-      Atualizar Dados (.xlsx)
-    </label>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <button class="ubtn" onclick="downloadDash()">
+        <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zm-8 2V5h2v6h1.17L12 13.17 9.83 11H11zm-6 7h14v2H5v-2z"/></svg>
+        Baixar Dashboard
+      </button>
+      <label class="ubtn" for="fileInput">
+        <svg viewBox="0 0 24 24"><path d="M9 16h6v-6h4l-7-7-7 7h4v6zm-4 2h14v2H5v-2z"/></svg>
+        Atualizar Dados (.xlsx)
+      </label>
+    </div>
     <input type="file" id="fileInput" accept=".xlsx,.xls" onchange="handleUpload(event)">
   </div>
 </div>
@@ -361,7 +367,7 @@ function renderCanalChart(data){
     data:{labels:canais,datasets:[{label:'Nota Média',data:avgs,backgroundColor:bg,borderColor:bdr,borderWidth:2,borderRadius:7,borderSkipped:false}]},
     options:{
       responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`Nota: ${c.parsed.y!==null?c.parsed.y.toFixed(2):'—'}${c.parsed.y<3?' ⚠ ALERTA!':''}`}},datalabels:{anchor:'end',align:'end',formatter:(v)=>v!==null?v.toFixed(2):'',font:{weight:'700',size:11},color:(ctx)=>{const v=ctx.dataset.data[ctx.dataIndex];return v!==null&&v<3?'#b71c1c':'#1565c0';},clamp:true}},
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`Nota: ${c.parsed.y!==null?c.parsed.y.toFixed(2):'—'}${c.parsed.y<3?' ⚠ ALERTA!':''}`}},datalabels:{anchor:'center',align:'center',formatter:(v)=>v!==null?v.toFixed(2):'',font:{weight:'700',size:12},color:'#fff',clamp:true}},
       scales:{
         y:{min:0,max:5,grid:{color:'#e8eef7'},ticks:{color:'#6b7a99',font:{size:11}},title:{display:true,text:'Nota Média (0–5)',color:'#6b7a99',font:{size:11}}},
         x:{grid:{display:false},ticks:{color:'#1a2744',font:{size:11,weight:'600'}}}
@@ -475,6 +481,13 @@ function handleUpload(ev){
     }catch(err){alert('Erro: '+err.message);}
   };
   r.readAsArrayBuffer(f);
+}
+
+// ── DOWNLOAD ──
+function downloadDash(){
+  const blob=new Blob([document.documentElement.outerHTML],{type:'text/html'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download='dashboard_reputacao_canais.html'; a.click();
 }
 
 // ── INIT ──
