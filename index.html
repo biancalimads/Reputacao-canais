@@ -146,6 +146,7 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f4f9;color:#1a2744;}
     <div class="ctitle">Nota Média por Semana Comercial <span class="cbadge" id="semBadge">—</span></div>
     <div class="csub"></div>
     <div style="position:relative;height:420px"><canvas id="ch2"></canvas></div>
+    <div class="shopee-note" id="shopeeNoteSem" style="display:none">📊 <span><strong>Shopee NOTA % (semana):</strong> <span id="shopeePctSem">—</span></span></div>
   </div>
 </div>
 
@@ -159,7 +160,7 @@ let lastUpdateStr = '25/05/2026 13:32';
 const CHART_COLORS = [
   '#6366f1','#f59e0b','#10b981','#ec4899','#8b5cf6',
   '#06b6d4','#f97316','#14b8a6','#a855f7','#eab308',
-  '#22c55e','#3b82f6','#ef4444','#84cc16','#e879f9','#fb923c','#34d399'
+  '#22c55e','#3b82f6','#84cc16','#e879f9','#fb923c','#34d399','#60a5fa'
 ];
 const BLUE = '#1565c0';          // gráfico de canal: cor normal
 const RED  = '#e53935';          // ambos: nota < 3
@@ -330,7 +331,7 @@ function renderKPIs(data){
   document.getElementById('krow').innerHTML=`
     <div class="kcard"><div class="klbl">Canais Monitorados</div><div class="kval">${canais.length}</div><div class="ksub">canais no período</div></div>
     <div class="kcard"><div class="klbl">Nota Média Geral</div><div class="kval">${g!==null?g.toFixed(2):'—'}</div><div class="ksub">média geral</div></div>
-    <div class="kcard"><div class="klbl">Total de Registros</div><div class="kval">${data.length.toLocaleString('pt-BR')}</div><div class="ksub">avaliações</div></div>`;
+`;
 }
 
 // ── ALERTS ──
@@ -417,6 +418,19 @@ function renderSemanaChart(data){
       }
     }
   });
+
+  // Shopee % por semana
+  const spSem=sems.map(s=>{
+    const vals=data.filter(d=>d.CANAL==='SHOPEE'&&semLbl(d.SEMANA)===s&&d.NOTA_PCT!==null&&d.NOTA_PCT<=1).map(d=>d.NOTA_PCT);
+    return vals.length?{sem:s,pct:(avg(vals)*100).toFixed(1)}:null;
+  }).filter(Boolean);
+  const noteSem=document.getElementById('shopeeNoteSem');
+  if(noteSem){
+    if(spSem.length){
+      noteSem.style.display='flex';
+      document.getElementById('shopeePctSem').textContent=spSem.map(x=>`${x.sem}: ${x.pct}%`).join(' · ');
+    } else noteSem.style.display='none';
+  }
 }
 
 // ── UPLOAD ──
